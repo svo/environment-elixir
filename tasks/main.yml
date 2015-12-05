@@ -1,0 +1,62 @@
+  - name: Add erlang apt key
+    apt_key: url="http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc"
+    sudo: yes
+    tags:
+    - elixir
+    - run
+
+  - name: Add erlang apt repository
+    apt_repository: repo="deb http://packages.erlang-solutions.com/ubuntu trusty contrib"
+    sudo: yes
+    tags:
+    - elixir
+    - run
+
+  - name: Install Elixir
+    apt: pkg={{item}} update_cache=yes
+    with_items:
+      - esl-erlang
+      - elixir
+    sudo: yes
+    tags:
+    - elixir
+    - run
+
+  - name: Install git
+    apt: pkg=git
+    sudo: yes
+    tags:
+    - elixir
+    - run
+
+  - name: Setup paths for vim
+    file: path={{ item }} state=directory
+    with_items:
+    - ~/.vim/autoload
+    - ~/.vim/bundle
+    tags:
+    - elixir
+    - run
+
+  - name: Install pathogen
+    get_url: url=https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim dest=~/.vim/autoload/pathogen.vim
+    tags:
+    - elixir
+    - run
+
+  - name: Install vim-elixir
+    git: repo=https://github.com/elixir-lang/vim-elixir.git dest=~/.vim/bundle/vim-elixir
+    tags:
+    - elixir
+    - run
+
+  - name: Update .vimrc
+    lineinfile: dest=~/.vimrc line="{{ item }}" create=yes
+    with_items:
+    - execute pathogen#infect()
+    - syntax on
+    - filetype plugin indent on
+    tags:
+    - elixir
+    - run
+
